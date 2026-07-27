@@ -1,0 +1,38 @@
+[
+  {
+    "id": "q1",
+    "question": "How much storage do I get on the Pro plan?",
+    "expected_facts": ["2TB", "$19.99/month"],
+    "should_answer": true
+  },
+  {
+    "id": "q2",
+    "question": "Can I get a refund on my monthly subscription?",
+    "expected_facts": ["monthly plans are non-refundable", "cancel at any time"],
+    "should_answer": true
+  },
+  {
+    "id": "q3",
+    "question": "Does the bot support carrier pigeon delivery?",
+    "expected_facts": [],
+    "should_answer": false
+  },
+  {
+    "id": "q4",
+    "question": "What encryption does CloudSync Pro use?",
+    "expected_facts": ["AES-256", "TLS 1.3"],
+    "should_answer": true
+  },
+  {
+    "id": "q5",
+    "question": "What is the maximum file upload size?",
+    "expected_facts": ["5GB"],
+    "should_answer": true
+  },
+  {
+    "id": "q6",
+    "question": "Can I use CloudSync Pro to order pizza?",
+    "expected_facts": [],
+    "should_answer": false
+  }
+]
