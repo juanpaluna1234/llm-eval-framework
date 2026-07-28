@@ -13,4 +13,3 @@ prompt to explicitly decline when context isn't directly relevant.
 
 **Why this matters:** this is a known RAG failure mode — vector search
 returning "closest available" instead of "actually relevant" results.
-

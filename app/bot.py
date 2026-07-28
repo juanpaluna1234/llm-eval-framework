@@ -22,10 +22,11 @@ def index_documents():
     )
 
 
-def retrieve_context(question: str, n_results: int = 2) -> list[str]:
-    """Find the most relevant document chunks for a question."""
+def retrieve_context(question: str, n_results: int = 2, max_distance: float = 1.0) -> list[str]:
     results = collection.query(query_texts=[question], n_results=n_results)
-    return results["documents"][0]
+    docs = results["documents"][0]
+    distances = results["distances"][0]
+    return [doc for doc, dist in zip(docs, distances) if dist < max_distance]
 
 
 def ask(question: str) -> str:
@@ -37,7 +38,8 @@ def ask(question: str) -> str:
         "You are a support assistant for CloudSync Pro. Answer the user's "
         "question using ONLY the context provided below. If the answer "
         "isn't in the context, say you don't have that information — do "
-        "not make anything up.\n\n"
+        "not make anything up. Do not describe general features "
+        "as a way of indirectly answering an unrelated question.\n\n"
         f"Context:\n{context}"
     )
 
