@@ -29,7 +29,7 @@ def retrieve_context(question: str, n_results: int = 2, max_distance: float = 1.
     return [doc for doc, dist in zip(docs, distances) if dist < max_distance]
 
 
-def ask(question: str) -> str:
+def ask(question: str, temperature: float = 1.0) -> str:
     """Answer a question using retrieved context, via the Claude API."""
     context_chunks = retrieve_context(question)
     context = "\n\n".join(context_chunks)
@@ -46,6 +46,7 @@ def ask(question: str) -> str:
     response = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=300,
+        temperature=temperature,
         system=system_prompt,
         messages=[{"role": "user", "content": question}],
     )
