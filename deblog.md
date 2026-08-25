@@ -69,3 +69,35 @@ test retrieval-driven instability), or more open-ended questions.
 expanding the knowledge base further, since the goal is a working portfolio
 demonstration, not an exhaustive one. Moving on to adversarial testing
 (prompt injection, out-of-scope edge cases).
+
+
+## 2026-07-29 — Consistency test catches variance, but reveals judge calibration issue
+
+Rerunning `test_consistency.py` at `temperature=1.0` (after finding no
+variance in the previous run) finally surfaced real wording variance: for
+q5, Run 2 said "5GB on all CloudSync Pro plans" while the other four runs
+said "5GB on all plans."
+
+**Judge verdict:** flagged this as an inconsistency/contradiction.
+
+**Assessment:** this is likely a false positive. Since CloudSync Pro is the
+only product in the knowledge base (with Basic/Pro as pricing tiers, not
+separate products), "all plans" and "all CloudSync Pro plans" almost
+certainly refer to the same thing. The judge appears to be pattern-matching
+on surface-level phrasing differences rather than reasoning about whether
+they denote the same real-world fact.
+
+**Implication:** this is a second class of bug beyond what this test was
+designed to catch — not just "is the bot consistent," but "is the judge
+well-calibrated enough to tell real contradictions from benign rephrasing."
+LLM-as-judge systems are known to have this failure mode in both directions
+(too strict or too lenient), and this is a concrete example of it.
+
+**Next step:** consider tightening `judge_consistency()`'s prompt to
+explicitly instruct the judge to treat referring to the product by name as
+equivalent to "all plans" when there's only one product — or more broadly,
+to ignore phrasing differences that don't change the real-world meaning.
+Opening this as a separate issue rather than conflating it with bot-level
+inconsistency.
+
+

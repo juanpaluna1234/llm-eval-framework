@@ -52,13 +52,6 @@ Respond ONLY with a JSON object, no other text, in this exact format:
 
 
 def judge_consistency(question: str, answers: list[str]) -> dict:
-    """
-    Uses Claude as a judge to check whether multiple answers to the same
-    question are factually consistent with each other (not necessarily
-    identical wording, but no contradictions).
-
-    Returns a dict: {"consistent": bool, "reasoning": str}
-    """
     numbered_answers = "\n\n".join(
         f"Answer {i+1}: {answer}" for i, answer in enumerate(answers)
     )
@@ -70,10 +63,21 @@ Question asked: {question}
 
 {numbered_answers}
 
-Evaluate: do these answers agree on the facts, even if worded differently?
-Flag them as inconsistent if any answer contradicts another (e.g., different
-prices, different feature claims, one refuses while others answer, etc.).
-Minor wording differences are fine — only flag genuine factual contradictions.
+Evaluate: do these answers agree on the real-world facts, even if worded
+differently?
+
+Important calibration notes:
+- Focus on whether the underlying facts differ, NOT whether the wording differs.
+- If there is only one product being discussed, treat generic phrases like
+  "all plans" and product-specific phrases like "all [Product Name] plans"
+  as equivalent, unless the answers explicitly describe different scopes
+  (e.g., one says "only the Basic plan" and another says "all plans").
+- One answer including extra true details that another omits is NOT a
+  contradiction — only flag genuine conflicts, such as different numbers,
+  different policies, or one answer directly negating another.
+
+Flag them as inconsistent ONLY if there is a genuine factual contradiction
+after accounting for the above.
 
 Respond ONLY with a JSON object, no other text, in this exact format:
 {{"consistent": <true or false>, "reasoning": "<one sentence explanation>"}}"""
