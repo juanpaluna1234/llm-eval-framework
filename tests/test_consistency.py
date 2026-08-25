@@ -7,7 +7,7 @@ with open("tests/golden_set.json") as f:
     GOLDEN_SET = json.load(f)
 
 # Only test consistency on questions the bot SHOULD answer —
-# refusals are trivially consistent and not interesting to che ck here.
+# refusals are trivially consistent and not interesting to check here.
 ANSWERABLE_CASES = [case for case in GOLDEN_SET if case["should_answer"]]
 
 N_RUNS = 5

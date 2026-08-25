@@ -23,6 +23,12 @@ def index_documents():
 
 
 def retrieve_context(question: str, n_results: int = 2, max_distance: float = 1.0) -> list[str]:
+    """Find the most relevant document chunks for a question.
+    
+    Filters out results that are too dissimilar (distance >= max_distance),
+    so irrelevant documents aren't passed to the model as if they were
+    valid context.
+    """
     results = collection.query(query_texts=[question], n_results=n_results)
     docs = results["documents"][0]
     distances = results["distances"][0]
@@ -32,14 +38,18 @@ def retrieve_context(question: str, n_results: int = 2, max_distance: float = 1.
 def ask(question: str, temperature: float = 1.0) -> str:
     """Answer a question using retrieved context, via the Claude API."""
     context_chunks = retrieve_context(question)
-    context = "\n\n".join(context_chunks)
+    
+    if not context_chunks:
+        context = "(No relevant information found in the knowledge base.)"
+    else:
+        context = "\n\n".join(context_chunks)
 
     system_prompt = (
         "You are a support assistant for CloudSync Pro. Answer the user's "
-        "question using ONLY the context provided below. If the answer "
-        "isn't in the context, say you don't have that information — do "
-        "not make anything up. Do not describe general features "
-        "as a way of indirectly answering an unrelated question.\n\n"
+        "question using ONLY the context provided below. If the context "
+        "does not directly and specifically answer the question, say you "
+        "don't have that information. Do not describe general features as "
+        "a way of indirectly answering an unrelated question.\n\n"
         f"Context:\n{context}"
     )
 

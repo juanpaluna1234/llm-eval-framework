@@ -35,6 +35,7 @@ Respond ONLY with a JSON object, no other text, in this exact format:
     response = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=200,
+        temperature=0,
         messages=[{"role": "user", "content": judge_prompt}],
     )
 
