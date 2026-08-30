@@ -235,3 +235,50 @@ production RAG/eval systems, not toy bugs. Precisely prompt-engineering
 correct behavior for mixed-scope requests took three iterations, which is
 itself worth noting: this kind of instruction-following is genuinely hard
 to get exactly right via prompting alone.
+
+## 2026-07-30 — Regression test found a bug in itself: needs temperature=0
+
+First run of `test_regression.py` after establishing a baseline immediately
+failed on q6 — score dropped from 5 to 2 — despite no code changes between
+baseline creation and the test run.
+
+**Root cause:** `ask()` defaults to `temperature=1.0` (set earlier for
+consistency testing), so regression tests were comparing non-deterministic
+runs against a fixed baseline. The "regression" was actually just normal
+sampling variance on a borderline case (q6, a refusal question), not a
+real quality drop.
+
+**Fix:** regression tests must run at `temperature=0` to be meaningful —
+reproducibility against a fixed baseline requires deterministic output.
+Updated both `test_regression.py` and `update_baseline.py` accordingly,
+and regenerated the baseline under the corrected settings.
+
+**Takeaway:** different test types need different temperature settings for
+different reasons — consistency tests want temperature=1.0 specifically to
+surface variance, while regression and adversarial tests want temperature=0
+to eliminate variance as a confound. Mixing these up produces misleading
+results, as seen here.
+
+
+## 2026-07-30 — Regression test found a bug in itself: needs temperature=0
+
+First run of `test_regression.py` after establishing a baseline immediately
+failed on q6 — score dropped from 5 to 2 — despite no code changes between
+baseline creation and the test run.
+
+**Root cause:** `ask()` defaults to `temperature=1.0` (set earlier for
+consistency testing), so regression tests were comparing non-deterministic
+runs against a fixed baseline. The "regression" was actually just normal
+sampling variance on a borderline case (q6, a refusal question), not a
+real quality drop.
+
+**Fix:** regression tests must run at `temperature=0` to be meaningful —
+reproducibility against a fixed baseline requires deterministic output.
+Updated both `test_regression.py` and `update_baseline.py` accordingly,
+and regenerated the baseline under the corrected settings.
+
+**Takeaway:** different test types need different temperature settings for
+different reasons — consistency tests want temperature=1.0 specifically to
+surface variance, while regression and adversarial tests want temperature=0
+to eliminate variance as a confound. Mixing these up produces misleading
+results, as seen here.
